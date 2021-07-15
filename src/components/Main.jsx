@@ -5,12 +5,11 @@ import Show from '../pages/Show';
 import {Link} from 'react-router-dom';
 
 
+
 function Main(props) {
 
     const [form, setForm] = useState('');
     const [data, setData] = useState(null);
-
-    const URL=`https://www.googleapis.com/books/v1/volumes?q=${form.title}+intitle:${form.title}&key=AIzaSyC6j4bZ4ZvK4pkxk0lGiQw6Y16TLIsM6eY`
 
     const handleChange = (event) => {
         setForm({
@@ -23,32 +22,34 @@ function Main(props) {
         //prevent default
         event.preventDefault()
         //Call API for searched term
-        getBook()
-    }
-
-    const getBook = async () => {
-        const response = await fetch(URL)
-        const bookData = await response.json()
-
-        setData(bookData)
-
-        return bookData
+        fetch(`http://localhost:3001/yelpAPI/search/${form.term}`)
+            .then(res => {
+                return res.json()
+            })
+            .then(data => {
+                console.log(data)
+                //set state for data
+                setData(data)
+            })
+            .catch(err => console.log(err)
+        )
     }
 
     const loaded = () => {
-        return data.items.map((book) => (
+        return data.businesses.map((business) => (
             
-            <div key={book.id} className="book card">
+            <div key={business.id}>
                 <Link to={{
-                    pathname: `books/${book.id}`,
+                    pathname: `business/${business.id}`,
                     state: {
-                        book: book
+                        data: data
                     }
                 }}>
-                    <img src={book.volumeInfo.imageLinks.smallThumbnail} alt={book.volumeInfo.imageLinks.thumbnail}/>
                     <div className="card-body">
-                    <h2 className="card-title">{book.volumeInfo.title}</h2>
-                    <h4 className="card-text">{book.volumeInfo.authors}</h4>
+                    <h2 className="card-title">{business.name}</h2>
+                    <h4 className="card-text">Rating: {business.rating} Reviews: {business.review_count}</h4>
+                    <br></br>
+                    <hr className="hr"></hr>
                     </div>
                     
                 </Link>
@@ -58,24 +59,24 @@ function Main(props) {
     }
 
     const loading = () => {
-        return <h2 className="loading">Loading....</h2>
+        return <h2 className="loading">Search for a Business using a Keyword</h2>
     }
     
     return(
         <main className="main">
 
-
+            <h1>Naperville Business App</h1>
             <Switch>
                 <Route exact path="/">
                     <form onSubmit={handleSubmit}>
-                        <input type="text" value={form.name} name="title" placeholder="Search A Business" onChange={handleChange} className="input" />
-                        <input type="submit" value="Find Business" class="btn btn-sm"/>
+                        <input type="text" value={form.name} name="term" placeholder="Search A Business" onChange={handleChange} className="input" />
+                        <input type="submit" value="Find Business" className="btn btn-sm"/>
                     </form>
                     <div className="cards">
-                    {data ? loaded() : loading()}
+                        {data ? loaded() : loading()}
                     </div>                    
                 </Route>
-                <Route path="/books/:id" render={(rp) => <Show {...rp}/>}/>
+                <Route path="/business/:id" render={(rp) => <Show {...rp}/>}/>
             </Switch>
         </main>
     ) 
