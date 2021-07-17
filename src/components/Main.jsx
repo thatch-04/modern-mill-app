@@ -22,7 +22,7 @@ function Main(props) {
         //prevent default
         event.preventDefault()
         //Call API for searched term
-        fetch(`http://localhost:3001/yelpAPI/search/${form.term}`)
+        fetch(`https://modern-mill-backend-api.herokuapp.com/yelpAPI/search/${form.term}`)
             .then(res => {
                 return res.json()
             })
