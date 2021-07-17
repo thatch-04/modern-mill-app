@@ -47,6 +47,7 @@ function Main(props) {
                 }}>
                     <div className="card-body">
                     <h2 className="card-title">{business.name}</h2>
+                    <img src={business.image_url}/>
                     <h4 className="card-text">Rating: {business.rating} Reviews: {business.review_count}</h4>
                     <br></br>
                     <hr className="hr"></hr>
